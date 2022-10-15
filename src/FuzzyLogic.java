@@ -5,7 +5,7 @@ import java.util.List;
 public class FuzzyLogic {
 
     private final double[][] rain_fuzzy = new double[5][];
-    private final double[] rain_value = new double[]{10,20,30,40,50,60,70,80,90,100};
+    private final double[] rain_value = new double[101];
     private final int ruleNum = 25;
     private final double temp_input;
     private final double wind_input;
@@ -31,7 +31,7 @@ public class FuzzyLogic {
 
     private double[] output_byRule(int num){
 
-        double[] output = new double[10];
+        double[] output = new double[101];
 
         // switch case
         switch (num) {
@@ -70,12 +70,57 @@ public class FuzzyLogic {
 
     private void setRain_fuzzy() {
 
-        rain_fuzzy[0] = new double[]{1,1,0.5,0.5,0.2,0.1,0,0,0,0};       // NL
-        rain_fuzzy[1] = new double[]{0.1,0.2,0.5,1,0.5,0.2,0.1,0,0,0};   // NS
-        rain_fuzzy[2] = new double[]{0,0,0.1,0.2,0.5,1,0.5,0.2,0.1,0};   // ZE
-        rain_fuzzy[3] = new double[]{0,0,0,0,0.1,0.2,0.5,1,0.5,0.2};     // PS
-        rain_fuzzy[4] = new double[]{0,0,0,0,0,0,0.1,0.2,0.5,1};         // PL
+        rain_fuzzy[0] = new double[101];   // Poor
+        for(int i=1; i<=100; i++){
+            if(i<=4)
+                rain_fuzzy[0][i] = 0.1*i;
+            else if(i<=10)
+                rain_fuzzy[0][i] = 1.11-(0.11*i);
+            else
+                rain_fuzzy[0][i] = 0;
+        }
 
+        rain_fuzzy[1] = new double[101];   // Low
+        for(int i=1; i<=100; i++){
+            if(i>=10 && i<=14)
+                rain_fuzzy[1][i] = (0.25*i)-2.5;
+            else if(i<=20 && i>=14)
+                rain_fuzzy[1][i] = 3.33-(0.17*i);
+            else
+                rain_fuzzy[1][i] = 0;
+        }
+
+        rain_fuzzy[2] = new double[101];   // Medium
+        for(int i=1; i<=100; i++){
+            if(i>=20 && i<=30)
+                rain_fuzzy[2][i] = (0.1*i)-2;
+            else if(i<=40 && i>=30)
+                rain_fuzzy[2][i] = 3-(0.07*i);
+            else
+                rain_fuzzy[2][i] = 0;
+        }
+
+        rain_fuzzy[3] = new double[101];     // High
+        for(int i=1; i<=100; i++){
+            if(i>=43 && i<=50)
+                rain_fuzzy[3][i] = (0.14*i)-6.14;
+            else if(i<=65 && i>=50)
+                rain_fuzzy[3][i] = 4.33-(0.07*i);
+            else
+                rain_fuzzy[3][i] = 0;
+        }
+
+        rain_fuzzy[4] = new double[101];         // Very High
+        for(int i=1; i<=100; i++){
+            if(i>=60)
+                rain_fuzzy[4][i] = (0.025*i)-1.5;
+            else
+                rain_fuzzy[4][i] = 0;
+        }
+
+        for(int i=0; i<=100; i++){
+            rain_value[i] = i;
+        }
     }
 
     private double[][] find_outputs(){
@@ -93,15 +138,16 @@ public class FuzzyLogic {
     private double[] find_max_output(){
 
         System.out.println("Fuzzy output: ");
-        double[] output = new double[10];
-         for (int i=0; i<10; i++){
+        double[] output = new double[101];
+         for (int i=0; i<101; i++){
             output[i] = 0;
         }
         double[][] output_list = find_outputs();
         // call find_output function
         for (int i=0; i<ruleNum; i++){
-            for (int j=0; j<10; j++){
-                if(output[j] <= output_list[i][j] ) output[j] =  output_list[i][j];
+            for (int j=0; j<101; j++){
+                if(output[j] <= output_list[i][j] )
+                    output[j] =  output_list[i][j];
             }
 
         }
@@ -162,9 +208,9 @@ public class FuzzyLogic {
         };
 
 
-        double[] output = new double[10];
+        double[] output = new double[101];
         double alpha = Math.min(a, b);
-        for (int i=0; i<10; i++) {
+        for (int i=0; i<101; i++) {
             output[i] = Math.min(alpha, rain_fuzzy[fuzzy_in][i]);
         }
         return output;
