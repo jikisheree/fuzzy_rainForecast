@@ -9,13 +9,15 @@ public class FuzzyLogic {
     private final int ruleNum = 25;
     private final double temp_input;
     private final double wind_input;
+    private final double humid_input;
     private final Membership_function mem_func;
 
 
-    public FuzzyLogic(double temp_input, double wind_input){
+    public FuzzyLogic(double temp_input, double wind_input, double humid_input){
         setRain_fuzzy();
         this.temp_input = temp_input;
         this.wind_input = wind_input;
+        this.humid_input = humid_input;
         this.mem_func = new Membership_function();
 
     }
@@ -35,6 +37,7 @@ public class FuzzyLogic {
 
         // switch case
         switch (num) {
+            // here: need to be fixed
             case 1 -> output = find_output(wind_membership_func("nl"), temp_membership_func("nl"), "nl");
             case 2 -> output = find_output(wind_membership_func("nl"), temp_membership_func("ns"), "nl");
             case 3 -> output = find_output(wind_membership_func("nl"), temp_membership_func("ze"), "ns");
@@ -194,22 +197,26 @@ public class FuzzyLogic {
         return mem_func.temp_function1(type, temp_input);
     }
 
-    private double[] find_output(double a, double b, String fuzzy_var){
+    private double humid_membership_func(String type){
+
+        return mem_func.humid_function1(type, humid_input);
+    }
+
+    private double[] find_output(double a, double b, double c, String fuzzy_var){
 
         System.out.println("cut_a " + a + " "  +  "cut_b " + b);
 
         int fuzzy_in = switch (fuzzy_var) {
-            case "nl" -> 0;
-            case "ns" -> 1;
-            case "ze" -> 2;
-            case "ps" -> 3;
-            case "pl" -> 4;
+            case "poor" -> 0;
+            case "low" -> 1;
+            case "med" -> 2;
+            case "high" -> 3;
             default -> 0;
         };
 
-
         double[] output = new double[101];
         double alpha = Math.min(a, b);
+        alpha = Math.min(alpha, c);
         for (int i=0; i<101; i++) {
             output[i] = Math.min(alpha, rain_fuzzy[fuzzy_in][i]);
         }
